@@ -14,6 +14,13 @@ class AuthUtils {
 
         return await bcrypt.hash( password, salt );
     }
+
+    static async checkPassword( password, hash, salt ) {
+
+        const check = await this.hashPassword( password, salt  );
+
+        return check === hash;
+    }
 }
 
 module.exports = AuthUtils;
