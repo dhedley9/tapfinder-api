@@ -1,4 +1,5 @@
 const { Model, DataTypes } = require('sequelize');
+const AuthUtils            = require('../utils/authUtils');
 
 const fields = {
     // Model attributes are defined here
@@ -25,7 +26,7 @@ const fields = {
         allowNull: false,
         defaultValue: 'standard'
     },
-    password: {
+    passwordHash: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -36,12 +37,29 @@ const fields = {
     lastLogin: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+    password: {
+        type: DataTypes.VIRTUAL
     }
 }
 
 const options = {
+    
     modelName: 'User', // We need to choose the model name
-    tableName: 'Users' // Explicitly tell sequlize the table name
+    tableName: 'Users', // Explicitly tell sequlize the table name
+
+    // Salt and Hash password
+    hooks: {
+
+        beforeValidate: async ( user ) => {
+
+            if( user.password ) {
+
+                user.salt         = await AuthUtils.createSalt();
+                user.passwordHash = await AuthUtils.hashPassword( user.password, user.salt );
+            }
+        }
+    }
 }
 
 class User extends Model{}
