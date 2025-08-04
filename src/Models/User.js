@@ -7,6 +7,11 @@ const fields = {
         autoIncrement: true,
         primaryKey: true,
     },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+    },
     firstName: {
         type: DataTypes.STRING,
         allowNull: false,

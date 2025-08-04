@@ -15,7 +15,7 @@ const sequelize = new Sequelize({
     port: process.env.DB_PORT
 });
 
-const User = require('./src/Models/User.js')(sequelize);
+const User = require('./src/models/User.js')(sequelize);
 
 // Configure the express app
 const app     = express();
