@@ -19,7 +19,10 @@ const handleLogin = async ( req, res ) => {
     if( !result.isEmpty() ) {
         
         res.status( 400 );
-        res.json( { errors: result.array() } );
+        res.json( { 
+            message: 'Required parameters missing or empty',
+            errors: result.array() 
+        } );
 
         return res;
     }
@@ -34,7 +37,6 @@ const handleLogin = async ( req, res ) => {
         },
     });
 
-    // TODO: Reformat error responses to be consistent with Express Validator
     if( !user ) {
 
         res.status( 401 );
