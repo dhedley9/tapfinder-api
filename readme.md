@@ -26,7 +26,7 @@ const users = await User.findAll();
 // Find a specific user
 const user = await User.findOne({
     where: {
-        email: 'davidjhedley1@gmail.com',
+        email: 'user@example.com',
     },
 });
 ```
