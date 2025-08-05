@@ -3,27 +3,30 @@ const router    = express.Router();
 const { User }  = require( '../../models/index.js' );
 const AuthUtils = require( '../../utils/authUtils.js' );
 
-// POST /v1/auth/login
-router.post( '/login', async ( req, res ) => {
+const { body, validationResult, matchedData } = require( 'express-validator' );
 
-    if( typeof req.body !== 'object' ) {
+// Re-usable validation / sanitisation chains
+const checkEmail = () => body( 'email' ).trim().isEmail();
 
-        res.status( 400 );
-        res.json( { message: 'This route expects a valid JSON object' } );
+// Route callbacks
 
-        return res;
-    }
+const handleLogin = async ( req, res ) => {
 
-    const email    = req.body.email;
-    const password = req.body.password;
+    // Get results from Express Validator
+    const result = validationResult( req );
 
-    if( typeof email !== 'string' || typeof password !== 'string' || !email.length || !password.length ) {
+    // Output the Express Validator results as 
+    if( !result.isEmpty() ) {
         
         res.status( 400 );
-        res.json( { message: 'Required parameters missing or empty' } );
+        res.json( { errors: result.array() } );
 
         return res;
     }
+
+    const data     = matchedData( req )
+    const email    = data.email;
+    const password = data.password;
 
     const user = await User.findOne({
         where: {
@@ -31,11 +34,12 @@ router.post( '/login', async ( req, res ) => {
         },
     });
 
+    // TODO: Reformat error responses to be consistent with Express Validator
     if( !user ) {
 
         res.status( 401 );
         res.json( { message: 'Invalid username or password' } );
-        
+
         return res;
     }
 
@@ -45,14 +49,24 @@ router.post( '/login', async ( req, res ) => {
 
         res.status( 401 );
         res.json( { message: 'Invalid username or password' } );
-        
+
         return res;
     }
 
-    res.status( 200 )
-    res.json( { message: 'Authentication successful', token: 'dummy-jwt-token' } );
+    res.status(200)
+    res.json({ message: 'Authentication successful', token: 'dummy-jwt-token' });
 
     return res;
-});
+}
+
+// Register routes
+
+// POST /v1/auth/login
+router.post( 
+    '/login', 
+    checkEmail(),
+    body( 'password' ).notEmpty(),
+    handleLogin
+);
 
 module.exports = router;
