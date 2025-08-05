@@ -1,35 +1,25 @@
-const express       = require( 'express' );
-const dotenv        = require( 'dotenv' );
-const { Sequelize } = require( 'sequelize' );
+const express = require( 'express' );
+const dotenv  = require( 'dotenv' );
 
 // Load .env into process.env
 dotenv.config();
 
-// Configure the Sequelize ORM to connect to Postgres database
-const sequelize = new Sequelize({
-    dialect: 'postgres',
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT
-});
-
-const User = require('./src/models/User.js')(sequelize);
+// Load the database
+const db = require( './src/models/index.js' );
 
 // Configure the express app
-const app     = express();
-const PORT    = process.env.PORT || 4001;;
+const app  = express();
+const PORT = process.env.PORT || 4001;
 
 const startServer = async () => {
 
     try {
         // Authenticate with the database first
-        await sequelize.authenticate();
+        await db.sequelize.authenticate();
         console.log('Connection has been established successfully.');
 
         // Sync the tables
-        await User.sync();
+        await db.User.sync();
         console.log('Database synced.');
 
         // Start the server
