@@ -11,6 +11,13 @@ const db = require( './src/models/index.js' );
 const app  = express();
 const PORT = process.env.PORT || 4001;
 
+// Middleware - Configure express to handle JSON payloads
+app.use( express.json() );
+
+// Import v1 routes
+const routes = require( './src/routes/v1' );
+app.use( '/v1', routes );
+
 const startServer = async () => {
 
     try {
