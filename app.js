@@ -1,6 +1,8 @@
 const express = require( 'express' );
 const dotenv  = require( 'dotenv' );
 
+const expressParseErrorHandler = require( 'express-body-parser-error-handler' )
+
 // Load .env into process.env
 dotenv.config();
 
@@ -13,6 +15,9 @@ const PORT = process.env.PORT || 4001;
 
 // Middleware - Configure express to handle JSON payloads
 app.use( express.json() );
+
+// Middleware - Handle parse errors (e.g. invalid JSON)
+app.use( expressParseErrorHandler() );
 
 // Import v1 routes
 const routes = require( './src/routes/v1' );
